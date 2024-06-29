@@ -17,6 +17,7 @@ export default function RSVPForm() {
     rsvp: 'yes',
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,10 +26,15 @@ export default function RSVPForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await submitForm(formData);
-    setShowSuccess(true);
+    try {
+      await submitForm(formData);
+      setShowSuccess(true);
+      setError(null);
+    } catch (error) {
+      setError('Error al enviar el formulario. Por favor, intenta de nuevo.');
+      setShowSuccess(false);
+    }
   };
-
   const handleOnClose = () => {
     setShowSuccess(false);
     setFormData({
@@ -53,6 +59,11 @@ export default function RSVPForm() {
         <h2 className="text-2xl p-4 font-medium text-center text-secondaryTextColor">Confirma tu asistencia</h2>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+            {error}
+          </div>
+        )}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-secondaryTextColor">Nombre</label>
           <input
