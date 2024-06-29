@@ -19,10 +19,10 @@ export async function POST(req: Request) {
 
 
     if (!response.ok) {
-      throw new Error(`Failed to post to webhook: ${response.statusText}`);
+      throw new Error(`Failed to submit: ${response.statusText}`);
     }
     return NextResponse.json({ message: "Success" }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create lesson' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to submit' }, { status: 500 });
   }
 }
