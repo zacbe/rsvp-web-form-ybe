@@ -8,6 +8,7 @@ interface FormState {
   name: string;
   email: string;
   rsvp: string;
+  notification_type: string;
 }
 
 export default function RSVPForm() {
@@ -15,6 +16,7 @@ export default function RSVPForm() {
     name: '',
     email: '',
     rsvp: 'yes',
+    notification_type: 'rsvp',
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +43,7 @@ export default function RSVPForm() {
       name: '',
       email: '',
       rsvp: 'yes',
+      notification_type: 'rsvp',
     });
   };
 
