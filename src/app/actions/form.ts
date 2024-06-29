@@ -6,7 +6,7 @@ interface Form {
 
 export const submitForm = async (form: Form): Promise<void | never> => {
   try {
-    await fetch('api//form', {
+    await fetch('api/form', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

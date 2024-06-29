@@ -1,21 +1,26 @@
 import { NextResponse } from 'next/server';
 
+const webhook = process.env.WEBHOOK_BASE_URL!;
+const apikey = process.env.WEBHOOK_API_KEY!;
+
 export async function POST(req: Request) {
   try {
-
     const body = await req.json();
-    console.log(body);
-    // let lessons = body?.lessons?.length !== 0 ? body.lessons : null;
-    // const [err, challengeId] = await on(insertOne(body))
-    // if (err) throw new Error("Error while creating")
+    const url = new URL(webhook);
+    url.searchParams.set('auth', apikey);
 
-    // if (lessons) {
-    //   const filter = { _id: { $in: lessons.map(nativeId) } }
-    //   const update = { $push: { challenges: challengeId } }
-    //   const [err,] = await on(updateMany(filter, update))
-    //   if (err) throw new Error("Error while updating lessons")
-    // }
+    const response = await fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
 
+
+    if (!response.ok) {
+      throw new Error(`Failed to post to webhook: ${response.statusText}`);
+    }
     return NextResponse.json({ message: "Success" }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create lesson' }, { status: 500 });
