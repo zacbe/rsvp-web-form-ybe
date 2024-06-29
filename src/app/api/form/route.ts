@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ message: "Success" }, { status: 201 });
   } catch (error) {
+    console.error('Failed to submit form:', error);
     return NextResponse.json({ error: 'Failed to submit' }, { status: 500 });
   }
 }
