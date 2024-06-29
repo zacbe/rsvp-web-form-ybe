@@ -6,16 +6,9 @@ const apikey = process.env.WEBHOOK_API_KEY!;
 export async function POST(req: Request) {
   try {
 
-    if (!webhook || !apikey) {
-      console.error({ webhook, apikey })
-      throw new Error('Missing webhook or apikey');
-    }
-
     const body = await req.json();
     const url = new URL(webhook);
     url.searchParams.set('auth', apikey);
-
-    console.info('Sending webhook to:', url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'POST',
