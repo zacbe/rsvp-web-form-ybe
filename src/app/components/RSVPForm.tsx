@@ -1,59 +1,41 @@
 'use client';
-import { useState } from 'react';
+
+import { useReducer } from 'react';
 import Image from 'next/image';
 import { submitForm } from '../actions';
 import SuccessMessage from './SuccessMessage';
-
-interface FormState {
-  name: string;
-  email: string;
-  rsvp: string;
-  notification_type: string;
-}
+import { initialState, reducer } from '@/app/state/formReducer';
 
 export default function RSVPForm() {
-  const [formData, setFormData] = useState<FormState>({
-    name: '',
-    email: '',
-    rsvp: 'yes',
-    notification_type: 'rsvp',
-  });
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    dispatch({ type: 'SET_FORM_DATA', payload: { name, value } });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       await submitForm({
-        name: formData.name,
-        email: formData.email,
-        rsvp: formData.rsvp,
-        notification_type: formData.notification_type,
+        name: state.formData.name,
+        email: state.formData.email,
+        rsvp: state.formData.rsvp,
+        notification_type: state.formData.notification_type,
       });
-      setShowSuccess(true);
-      setError(null);
+      dispatch({ type: 'SET_SUCCESS', payload: true });
+      dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
-      setError('Error al enviar el formulario. Por favor, intenta de nuevo.');
-      setShowSuccess(false);
+      dispatch({ type: 'SET_ERROR', payload: 'Error al enviar el formulario. Por favor, intenta de nuevo.' });
+      dispatch({ type: 'SET_SUCCESS', payload: false });
     } finally {
-      setIsLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
+
   const handleOnClose = () => {
-    setShowSuccess(false);
-    setFormData({
-      name: '',
-      email: '',
-      rsvp: 'yes',
-      notification_type: 'rsvp',
-    });
+    dispatch({ type: 'RESET_FORM' });
   };
 
   return (
@@ -71,9 +53,9 @@ export default function RSVPForm() {
         <h2 className="text-2xl p-4 font-medium text-center text-secondaryTextColor">Confirma tu asistencia</h2>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
+        {state.error && (
           <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-            {error}
+            {state.error}
           </div>
         )}
         <div>
@@ -82,7 +64,7 @@ export default function RSVPForm() {
             id="name"
             name="name"
             type="text"
-            value={formData.name}
+            value={state.formData.name}
             onChange={handleChange}
             required
             className="block w-full px-3 py-2 mt-1 text-secondaryTextColor border border-gray-300 rounded-md shadow-sm focus:ring-secondary focus:border-secondary"
@@ -94,7 +76,7 @@ export default function RSVPForm() {
             id="email"
             name="email"
             type="email"
-            value={formData.email}
+            value={state.formData.email}
             onChange={handleChange}
             required
             className="block w-full px-3 py-2 mt-1 text-secondaryTextColor border border-gray-300 rounded-md shadow-sm focus:ring-secondary focus:border-secondary"
@@ -108,7 +90,7 @@ export default function RSVPForm() {
                 type="radio"
                 name="rsvp"
                 value="yes"
-                checked={formData.rsvp === 'yes'}
+                checked={state.formData.rsvp === 'yes'}
                 onChange={handleChange}
               />
               <span className="ml-2 text-sm text-secondaryTextColor">Si</span>
@@ -118,7 +100,7 @@ export default function RSVPForm() {
                 type="radio"
                 name="rsvp"
                 value="no"
-                checked={formData.rsvp === 'no'}
+                checked={state.formData.rsvp === 'no'}
                 onChange={handleChange}
               />
               <span className="ml-2 text-sm text-secondaryTextColor">No</span>
@@ -128,7 +110,7 @@ export default function RSVPForm() {
                 type="radio"
                 name="rsvp"
                 value="maybe"
-                checked={formData.rsvp === 'maybe'}
+                checked={state.formData.rsvp === 'maybe'}
                 onChange={handleChange}
               />
               <span className="ml-2 text-sm text-secondaryTextColor">Tal vez</span>
@@ -138,10 +120,10 @@ export default function RSVPForm() {
         <div>
           <button
             type="submit"
-            className={`w-full px-4 py-2 text-secondaryTextColor bg-primaryBackgroundColor rounded-md focus:outline-none focus:ring-2 focus:ring-secondaryTextColor ${isLoading ? 'cursor-not-allowed' : ''}`}
-            disabled={isLoading}
+            className={`w-full px-4 py-2 text-secondaryTextColor bg-primaryBackgroundColor rounded-md focus:outline-none focus:ring-2 focus:ring-secondaryTextColor ${state.isLoading ? 'cursor-not-allowed' : ''}`}
+            disabled={state.isLoading}
           >
-            {isLoading ? (
+            {state.isLoading ? (
               <div className="flex items-center justify-center">
                 <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -155,7 +137,7 @@ export default function RSVPForm() {
           </button>
         </div>
       </form>
-      {showSuccess && <SuccessMessage onClose={handleOnClose} />}
+      {state.showSuccess && <SuccessMessage onClose={handleOnClose} />}
     </>
   );
 }
