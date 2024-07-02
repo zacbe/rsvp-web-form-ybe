@@ -27,7 +27,7 @@ export default function RSVPForm() {
       dispatch({ type: 'SET_SUCCESS', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Error al enviar el formulario. Por favor, intenta de nuevo.' });
+      dispatch({ type: 'SET_ERROR', payload: 'Error al enviar el formulario. Por favor, intenta más tarde.' });
       dispatch({ type: 'SET_SUCCESS', payload: false });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
