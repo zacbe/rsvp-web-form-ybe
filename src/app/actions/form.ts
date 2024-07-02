@@ -2,9 +2,10 @@ interface Form {
   name: string;
   email: string;
   rsvp: string;
+  notification_type: string;
 }
 
-export const submitForm = async (form: Form): Promise<void | never> => {
+export const submitForm = async (form: Form): Promise<void> => {
   try {
     const response = await fetch('api/form', {
       method: 'POST',
